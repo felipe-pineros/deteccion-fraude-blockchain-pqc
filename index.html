@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema inteligente de detección de fraude en redes blockchain con seguridad post-cuántica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#C8102E; --red-d:#8E0B20; --red-l:#FBE5E8;
+  --dark:#0B1020; --dark2:#151B30; --dark3:#2A3150;
+  --gold:#9A7B0A; --gold-l:#E8C85A; --gold-bg:#F4EDE0;
+  --ground:#F5F6FA; --card:#FFFFFF; --line:#E3E6EE;
+  --ink:#1F1F22; --muted:#55555C;
+  --acc:#4F46E5; --acc-d:#3730A3; --acc-l:#EEF0FF; --cyan:#67E8F9; --teal:#0F766E; --teal-bg:#F2FBF9;
+  --ok:#14532D; --ok-bg:#E3F1EA; --ok-line:#9CCBB0;
+  --blue:#1F2A44; --blue-bg:#EEF0F4;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.55}
+h1,h2,h3,h4{font-family:Montserrat,sans-serif;margin:0;line-height:1.15}
+a{color:var(--red)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+/* nav */
+nav.top{position:sticky;top:0;z-index:20;background:rgba(11,16,32,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--dark3)}
+nav.top .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:Montserrat;font-weight:800;font-size:15px;letter-spacing:.3px;white-space:nowrap}
+.brand svg{flex:0 0 auto}
+.brand span b{color:var(--cyan)}
+.navlinks{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{color:#D9D6D0;text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;white-space:nowrap}
+.navlinks a:hover{background:var(--dark3);color:#fff}
+
+/* hero */
+header.hero{background:var(--dark);color:#fff;padding:64px 0 72px;position:relative;overflow:hidden}
+header.hero{background:radial-gradient(900px 500px at 85% 10%,rgba(79,70,229,.35),transparent 60%),radial-gradient(700px 400px at 10% 100%,rgba(34,211,238,.12),transparent 60%),var(--dark)}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:48px;align-items:center}
+.feed{background:rgba(21,27,48,.85);border:1px solid var(--dark3);border-radius:18px;padding:18px}
+.feed h4{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#AEB6D0;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.feed h4 i{width:8px;height:8px;border-radius:50%;background:#34D399;box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+.frow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 0;border-top:1px solid var(--dark3);font-size:13.5px}
+.frow .mono{color:#E6E9F5}.frow small{color:#9AA3BF;font-size:12px}
+.pill{font:700 12px Inter;padding:4px 10px;border-radius:999px;align-self:center;white-space:nowrap}
+.pill.r{background:rgba(248,113,113,.16);color:#FCA5A5}.pill.g{background:rgba(52,211,153,.15);color:#6EE7B7}
+.eyebrow{font-family:Montserrat;font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin:0 0 14px}
+.hero h1{font-size:clamp(28px,3.4vw,44px);font-weight:900;letter-spacing:-.6px;line-height:1.12;text-wrap:balance}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#A5B4FC,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{font-size:18.5px;color:#C3C9DC;margin:18px 0 0;max-width:640px;text-wrap:pretty}
+.hero .who{margin:18px 0 4px;font-size:17px;font-weight:600}
+.hero .who span{color:#C9C6C0;font-weight:400;margin-left:18px}
+.hero .inst{margin:0;font-family:Montserrat;font-weight:700;font-size:15px;color:#fff}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:10px;border:0;font:600 15px Inter,sans-serif;cursor:pointer;text-decoration:none;transition:transform .12s,background .15s}
+.btn:active{transform:translateY(1px)}
+.btn-red{background:var(--acc);color:#fff}.btn-red:hover{background:var(--acc-d)}
+.btn-ghost{background:transparent;color:#fff;border:1.5px solid #4A5378}.btn-ghost:hover{border-color:#fff}
+.btn-dark{background:var(--dark);color:#fff}.btn-dark:hover{background:var(--dark3)}
+.btn-light{background:#fff;color:var(--ink);border:1.5px solid var(--line)}.btn-light:hover{border-color:#B9B2A5}
+.btn-sm{min-height:36px;padding:6px 12px;font-size:13.5px;border-radius:8px}
+.btn:disabled{opacity:.55;cursor:wait}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
+.stat{background:var(--dark2);border:1px solid var(--dark3);border-radius:14px;padding:18px}
+.stat b{display:block;font-family:Montserrat;font-weight:800;font-size:30px;color:#fff;font-variant-numeric:tabular-nums}
+.stat span{font-size:13.5px;color:#AEB6D0}
+
+/* sections */
+section.sec,header.hero{scroll-margin-top:60px}
+section.sec{padding:76px 0}
+section.sec.alt{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{max-width:760px;margin-bottom:34px}
+.tag{display:inline-block;background:var(--acc);color:#fff;font:800 12.5px Montserrat;letter-spacing:1.2px;text-transform:uppercase;padding:6px 12px;border-radius:6px;margin-bottom:14px}
+.sec-head h2{font-size:clamp(26px,3vw,36px);font-weight:800;text-wrap:balance}
+.sec-head p{color:var(--muted);font-size:17px;margin:12px 0 0;text-wrap:pretty}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+.alt .card{background:#FAFBFD}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card h3{font-size:19px;font-weight:800;margin-bottom:12px}
+ul.dots{margin:0;padding-left:20px}ul.dots li{margin-bottom:8px}ul.dots li::marker{color:var(--acc)}
+.chip{display:inline-block;background:var(--gold-bg);color:#5C4806;font-weight:600;font-size:13.5px;padding:6px 11px;border-radius:999px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip.red{background:var(--red-l);color:var(--red-d)}
+.chip.blue{background:var(--blue-bg);color:var(--blue)}
+.dark-card{background:var(--dark);color:#fff;border-radius:16px;padding:26px}
+.dark-card .tag{background:#1E2A4A;color:var(--cyan)}
+.objs{display:flex;flex-direction:column;gap:14px}
+.obj{display:flex;gap:14px;align-items:flex-start}
+.num{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font:800 14px Montserrat;display:flex;align-items:center;justify-content:center}
+
+/* pipeline */
+.pqc-frame{border:2px dashed #5EBFB2;border-radius:18px;padding:22px;background:var(--teal-bg)}
+.pqc-title{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--teal);font:800 13px Montserrat;letter-spacing:1px;text-transform:uppercase;margin-bottom:18px;text-align:center}
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch}
+.step{background:#fff;border:1px solid #D6DBE7;border-radius:12px;padding:16px;position:relative}
+.step.dk{background:var(--dark);color:#fff;border-color:var(--dark)}
+.step h4{font-size:14.5px;font-weight:800;margin-bottom:8px}
+.step p{margin:0;font-size:13.5px;line-height:1.45;color:var(--muted)}
+.step.dk p{color:#C3C9DC}
+.step small{display:block;font:700 11.5px Montserrat;letter-spacing:1px;color:var(--acc);margin-bottom:6px}
+.step.dk small{color:var(--cyan)}
+.arrow{display:flex;align-items:center;justify-content:center;width:28px}
+.pipe-row{display:flex;align-items:stretch}
+.pipe-row .step{flex:1}
+.pqc-note{text-align:center;margin:16px 0 0;font-size:14px;color:var(--teal)}
+
+/* detector */
+.det{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field label{display:block;font-size:13.5px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+.field input{width:100%;min-height:44px;border:1.5px solid #CBD1DE;border-radius:10px;padding:8px 12px;font:500 15px Inter;background:#fff;color:var(--ink);font-variant-numeric:tabular-nums}
+.field input:focus,.field select:focus{outline:3px solid rgba(79,70,229,.25);border-color:var(--acc)}
+.field .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.result{position:sticky;top:84px}
+.verdict{border-radius:14px;padding:20px;margin-bottom:16px;transition:background .25s}
+.verdict.idle{background:var(--ground);border:1px dashed #CBD1DE;color:var(--muted)}
+.verdict.ok{background:var(--ok-bg);border:1.5px solid var(--ok-line);color:var(--ok)}
+.verdict.bad{background:var(--red-l);border:1.5px solid #E9A3AE;color:var(--red-d)}
+.verdict h3{font-size:24px;font-weight:900;display:flex;align-items:center;gap:10px}
+.verdict p{margin:8px 0 0;font-size:14.5px}
+.meter{height:18px;background:linear-gradient(90deg,#CFE7DA 0 50%,#F5CAD1 50% 100%);border-radius:999px;position:relative;margin:26px 0 8px}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--dark);width:0;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.meter .th{position:absolute;left:50%;top:-6px;bottom:-6px;width:2px;background:var(--dark)}
+.meter-lab{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.prob{font:900 44px Montserrat;font-variant-numeric:tabular-nums;color:var(--ink)}
+.votes{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:10px}
+.vote{aspect-ratio:1;border-radius:5px;background:#E3E6EE;transition:background .3s}
+.vote.f{background:var(--red)}.vote.l{background:#3E8E63}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.model-note{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.5}
+
+/* results */
+.metric-block{margin-bottom:20px}
+.metric-block h4{font-size:14px;font-weight:800;margin-bottom:8px}
+.bar-row{display:grid;grid-template-columns:150px 1fr 64px;gap:10px;align-items:center;margin-bottom:6px;font-size:13.5px}
+.bar{height:22px;background:#ECEEF4;border-radius:6px;overflow:hidden}
+.bar>div{height:100%;border-radius:6px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.bar-val{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.c-lr{background:#9AA1B5}.c-rf{background:var(--acc)}.c-svm{background:#22B8CF}
+table.t{width:100%;border-collapse:collapse;font-size:14.5px}
+table.t th{background:var(--dark);color:#fff;text-align:right;padding:10px;font-weight:700}
+table.t th:first-child{text-align:left;border-radius:8px 0 0 0}table.t th:last-child{border-radius:0 8px 0 0}
+table.t td{padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.t td:first-child{text-align:left;font-weight:600}
+table.t tr.best td{background:var(--acc-l);color:var(--acc-d);font-weight:800}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;font-size:13.5px;margin-top:10px}
+.cm div{padding:14px 10px;border-radius:8px;text-align:center}
+.cm .h{font-weight:700;color:var(--muted);padding:6px}
+.cm .v{font:800 22px Montserrat;font-variant-numeric:tabular-nums}
+.cm .v small{display:block;font:500 12px Inter;margin-top:2px}
+.cm .tp{background:var(--red);color:#fff}.cm .tn{background:#3E8E63;color:#fff}.cm .fp,.cm .fn{background:#ECEEF4;color:var(--ink)}
+.imp-row{display:grid;grid-template-columns:1fr 1.1fr 52px;gap:10px;align-items:center;margin-bottom:8px;font-size:13.5px}
+.callout{background:var(--acc-l);border-radius:12px;padding:16px 18px;font-size:14.5px;color:var(--acc-d);margin-top:18px}
+
+/* blockchain */
+.bc-top{display:grid;grid-template-columns:.85fr 1.15fr;gap:22px;align-items:start}
+.field select{width:100%;min-height:44px;border:1.5px solid #CBD1DE;border-radius:10px;padding:8px 12px;font:500 15px Inter;background:#fff;color:var(--ink)}
+.log{background:var(--dark);color:#E5E2DC;border-radius:14px;padding:18px;font:13px/1.6 "JetBrains Mono",monospace;min-height:280px;max-height:420px;overflow:auto}
+.log .l{margin:0 0 4px;white-space:pre-wrap;word-break:break-all}
+.log .ok{color:#7BD3A0}.log .bad{color:#FF8A9B}.log .info{color:var(--cyan)}.log .dim{color:#9C9890}
+.chain{display:flex;gap:0;overflow-x:auto;padding:8px 2px 18px;margin-top:22px;align-items:stretch}
+.block{flex:0 0 260px;background:#fff;border:2px solid #CBD1DE;border-radius:14px;padding:14px;font-size:12.5px;position:relative;transition:border-color .3s,background .3s}
+.block.valid{border-color:#3E8E63}
+.block.broken{border-color:var(--red);background:#FFF5F6}
+.block.flag{border-color:#C9A227;border-style:dashed;background:#FFFCF2}
+.block h4{font-size:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.block .kv{display:grid;grid-template-columns:62px 1fr;gap:3px 6px;margin-bottom:8px}
+.block .kv span:nth-child(odd){color:var(--muted);font-weight:600}
+.block .kv span:nth-child(even){font-family:"JetBrains Mono",monospace;word-break:break-all;font-size:11.5px}
+.badge{display:inline-block;font:700 11px Inter;padding:3px 8px;border-radius:999px}
+.badge.g{background:var(--ok-bg);color:var(--ok)}.badge.r{background:var(--red-l);color:var(--red-d)}.badge.y{background:var(--gold-bg);color:#5C4806}
+.link{flex:0 0 34px;display:flex;align-items:center;justify-content:center}
+.block .acts{display:flex;gap:6px;margin-top:8px}
+.pq-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.pq-stats div{background:var(--ground);border-radius:10px;padding:10px;text-align:center}
+.pq-stats b{display:block;font:800 18px Montserrat;font-variant-numeric:tabular-nums}
+.pq-stats span{font-size:12px;color:var(--muted)}
+
+/* method */
+.timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;counter-reset:s}
+.tl{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;position:relative}
+.alt .tl{background:#FAFBFD}
+.tl b{display:block;font:900 30px Montserrat;color:var(--acc);margin-bottom:6px}
+.tl h4{font-size:15px;font-weight:800;margin-bottom:6px}
+.tl p{margin:0;font-size:13.5px;color:var(--muted)}
+.refs p{margin:0 0 10px;font-size:14px;color:#2B2B30}
+footer.ft{background:var(--dark);color:#AEB6D0;padding:34px 0;font-size:14px}
+footer.ft .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer.ft b{color:#fff;font-family:Montserrat}
+
+@media (max-width:980px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .det,.bc-top,.grid2{grid-template-columns:1fr}
+  .result{position:static}
+  .pipe-row{flex-direction:column}.arrow{width:auto;height:28px;transform:rotate(90deg)}
+  .timeline{grid-template-columns:1fr 1fr}
+  .grid3{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  .hero-grid{grid-template-columns:1fr;gap:22px}
+  .feed{display:none}
+  .fields{grid-template-columns:1fr}
+  .timeline{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 56px}
+  .brand span{display:none}
+  section.sec{padding:56px 0}
+}
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Secciones">
+  <div class="wrap">
+    <a class="brand" href="#inicio"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#818CF8"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><path d="M16 2l11 4v9c0 7-4.7 12.3-11 15C9.7 27.3 5 22 5 15V6z" fill="url(#lg)"/><path d="M11 16l3.5 3.5L21.5 12" fill="none" stroke="#0B1020" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Detección de Fraude <b>Blockchain PQC</b></span></a>
+    <div class="navlinks">
+      <a href="#producto">Producto</a>
+      <a href="#arquitectura">Cómo funciona</a>
+      <a href="#detector">Demo IA</a>
+      <a href="#resultados">Rendimiento</a>
+      <a href="#blockchain">Blockchain PQC</a>
+      <a href="#metodologia">Tecnología</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="inicio">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Ciberseguridad · IA · Blockchain</p>
+        <h1>Sistema inteligente de detección de fraude en redes blockchain con <em>seguridad post-cuántica</em></h1>
+        <p class="lead">Detecta el fraude antes de que ocurra: el sistema analiza cada cuenta con Machine Learning, bloquea las transacciones sospechosas y firma las legítimas con criptografía resistente a computadoras cuánticas.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-red" href="#detector">Probar la demo</a>
+          <a class="btn btn-ghost" href="#blockchain">Ver la blockchain post-cuántica</a>
+        </div>
+      </div>
+      <div class="feed" aria-label="Ejemplo de análisis en tiempo real">
+        <h4><i></i>Análisis en tiempo real · ejemplo</h4>
+        <div class="frow"><span class="mono">0x7a31…e21f</span><span class="pill r">Bloqueada · 94,2 %</span><small>7 transacciones · 2,49 ETH recibidos</small></div>
+        <div class="frow"><span class="mono">0xc9d0…14ab</span><span class="pill g">Aprobada · 0,2 %</span><small>3 transacciones · 101 ETH recibidos</small></div>
+        <div class="frow"><span class="mono">0x5f88…b07e</span><span class="pill r">Bloqueada · 69,3 %</span><small>6 transacciones · 26,2 ETH recibidos</small></div>
+        <div class="frow"><span class="mono">0x2e6b…aa93</span><span class="pill g">Aprobada · 29,7 %</span><small>12 transacciones · 0,15 ETH recibidos</small></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>9.841</b><span>cuentas de Ethereum usadas para entrenar y probar</span></div>
+      <div class="stat"><b>22 %</b><span>de las cuentas son fraudulentas</span></div>
+      <div class="stat"><b>95,9 %</b><span>de accuracy del motor de IA</span></div>
+      <div class="stat"><b>86 %</b><span>de los fraudes detectados</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- PROYECTO -->
+<section class="sec" id="producto">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">El reto</span>
+      <h2>Blockchain es segura, pero no es inmune al fraude</h2>
+      <p>Las redes blockchain registran transacciones de forma descentralizada, transparente e inmutable. Aun así, sufren lavado de dinero, phishing, doble gasto y manipulación de contratos inteligentes, y el volumen de transacciones hace imposible revisarlas a mano. Además, la computación cuántica amenaza la criptografía en la que se apoyan hoy.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>El problema que resolvemos</h3>
+        <ul class="dots">
+          <li>Vulnerabilidades como el doble gasto, la manipulación de contratos inteligentes y el uso fraudulento de direcciones.</li>
+          <li>Más transacciones significa más actividad ilícita, difícil de detectar de forma manual y oportuna.</li>
+          <li>El algoritmo de Shor, en una computadora cuántica, podría romper RSA y ECC, la base criptográfica actual.</li>
+          <li>Está en juego la confianza de usuarios, empresas y plataformas financieras.</li>
+        </ul>
+        <h3 style="margin-top:22px">Fraudes que detectamos</h3>
+        <div class="chips">
+          <span class="chip red">Doble gasto</span><span class="chip red">Lavado de dinero</span><span class="chip red">Phishing</span>
+          <span class="chip red">Esquemas Ponzi</span><span class="chip red">Contratos inteligentes</span><span class="chip red">Robo de activos</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="dark-card">
+          <span class="tag">Nuestra misión</span>
+          <p style="margin:0;font-size:18px;font-weight:500;line-height:1.5">Proteger las redes blockchain con inteligencia artificial que detecta el fraude a tiempo y criptografía que resiste la llegada de la computación cuántica.</p>
+        </div>
+        <div class="card">
+          <h3>Qué hace el sistema</h3>
+          <div class="objs">
+            <div class="obj"><span class="num">1</span><span><b>Analiza</b> los patrones de comportamiento de cada cuenta en la red.</span></div>
+            <div class="obj"><span class="num">2</span><span><b>Clasifica</b> con Machine Learning si la cuenta es legítima o fraudulenta y bloquea las sospechosas.</span></div>
+            <div class="obj"><span class="num">3</span><span><b>Protege</b> las transacciones aprobadas con firmas post-cuánticas encadenadas con SHA-256.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUITECTURA -->
+<section class="sec alt" id="arquitectura">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Cómo funciona</span>
+      <h2>De los datos a la alerta en cinco pasos</h2>
+      <p>Los datos de las cuentas pasan por un modelo de Machine Learning que decide si son legítimas o fraudulentas. Todo el flujo está protegido por una capa de criptografía resistente a computadoras cuánticas.</p>
+    </div>
+    <div class="pqc-frame">
+      <div class="pqc-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Capa de seguridad post-cuántica (NIST PQC)
+      </div>
+      <div class="pipe-row">
+        <div class="step"><small>PASO 1</small><h4>Datos de entrada</h4><p>Ethereum Fraud Detection Dataset (Kaggle) y Elliptic Bitcoin Dataset (+200.000 transacciones).</p></div>
+        <div class="arrow"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+        <div class="step"><small>PASO 2</small><h4>Preprocesamiento</h4><p>Limpieza, selección de variables (volumen, frecuencia, número de transacciones) y división 80/20.</p></div>
+        <div class="arrow"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+        <div class="step dk"><small>PASO 3</small><h4>Modelos de ML</h4><p>Comparamos regresión logística, Random Forest y SVM; en producción usamos Random Forest.</p></div>
+        <div class="arrow"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+        <div class="step"><small>PASO 4</small><h4>Evaluación</h4><p>Accuracy, Precision, Recall y F1-score sobre datos que el modelo nunca vio.</p></div>
+        <div class="arrow"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+        <div class="step"><small>PASO 5</small><h4>Clasificación y alertas</h4><p>Cada cuenta se marca como legítima o fraudulenta; las sospechosas generan una alerta.</p></div>
+      </div>
+      <p class="pqc-note">Las transacciones aceptadas se firman con criptografía basada en hash, resistente a ataques cuánticos, y se encadenan con SHA-256.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DETECTOR -->
+<section class="sec" id="detector">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Demo en vivo · Motor de IA</span>
+      <h2>Analiza una cuenta de Ethereum</h2>
+      <p>Carga una cuenta real del conjunto de prueba o escribe tus propios valores. Nuestro motor (un Random Forest de 30 árboles) decide en tu navegador si la cuenta es fraudulenta.</p>
+    </div>
+    <div class="det">
+      <div class="card">
+        <p style="margin:0 0 10px;font-weight:700;font-size:14px">Cargar una cuenta real del conjunto de prueba:</p>
+        <div class="presets" id="presets"></div>
+        <form id="detForm" class="fields" novalidate></form>
+        <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+          <button class="btn btn-red" type="submit" form="detForm">Analizar cuenta</button>
+          <button class="btn btn-light" type="button" id="randBtn">Cuenta aleatoria</button>
+        </div>
+      </div>
+      <div class="card result" aria-live="polite">
+        <div class="verdict idle" id="verdict">
+          <h3>Esperando una cuenta</h3>
+          <p>Elige una cuenta de ejemplo o escribe los valores y pulsa «Analizar cuenta».</p>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+          <span style="font-weight:700;font-size:14px">Probabilidad de fraude</span>
+          <span class="prob" id="prob">—</span>
+        </div>
+        <div class="meter"><div class="fill" id="fill"></div><div class="th"></div></div>
+        <div class="meter-lab"><span>0 % · legítima</span><span>umbral 50 %</span><span>100 % · fraude</span></div>
+        <p style="margin:22px 0 0;font-weight:700;font-size:14px">Voto de cada uno de los 30 árboles</p>
+        <div class="votes" id="votes"></div>
+        <div class="legend"><span><i style="background:#C8102E"></i>vota fraude</span><span><i style="background:#3E8E63"></i>vota legítima</span><span id="voteCount"></span></div>
+        <p class="model-note" id="liteNote">Cargando modelo…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTADOS -->
+<section class="sec alt" id="resultados">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Rendimiento</span>
+      <h2>Elegimos el modelo que de verdad encuentra el fraude</h2>
+      <p>Entrenamos los tres modelos sobre las mismas 7.872 cuentas y los evaluamos con 1.969 cuentas que no habían visto antes (partición 80/20, random_state = 42).</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Comparativa de métricas</h3>
+        <div class="legend" style="margin:0 0 16px"><span><i class="c-lr"></i>Regresión logística</span><span><i class="c-rf"></i>Random Forest</span><span><i class="c-svm"></i>SVM</span></div>
+        <div id="bars"></div>
+      </div>
+      <div class="card">
+        <h3>Tabla de resultados</h3>
+        <table class="t" id="tbl"></table>
+        <h3 style="margin-top:26px">Matriz de confusión · Random Forest</h3>
+        <div class="cm" id="cm"></div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="card">
+        <h3>¿Qué variables delatan el fraude?</h3>
+        <p style="margin:0 0 16px;color:var(--muted);font-size:14.5px">Importancia de cada variable según el Random Forest.</p>
+        <div id="imp"></div>
+      </div>
+      <div class="card">
+        <h3>Lectura de los resultados</h3>
+        <ul class="dots">
+          <li><b>Random Forest</b> detecta el 86 % de los fraudes y, cuando marca una cuenta como fraudulenta, acierta el 94 % de las veces.</li>
+          <li><b>La regresión logística</b> casi nunca se equivoca al acusar (98 % de precisión), pero solo encuentra el 14 % de los fraudes.</li>
+          <li><b>El SVM</b> con la configuración por defecto clasifica todas las cuentas como legítimas. Por eso su accuracy (78 %) coincide con el porcentaje de cuentas legítimas y su recall es 0.</li>
+          <li>El dataset está desbalanceado (22 % de fraude). Por eso el accuracy solo no basta: el recall y el F1 muestran qué modelo encuentra de verdad el fraude.</li>
+        </ul>
+        <div class="callout"><b>Próximamente:</b> balanceo de clases, análisis de grafos con Graph Neural Networks y soporte para la red de Bitcoin (Elliptic Dataset).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOCKCHAIN -->
+<section class="sec" id="blockchain">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Demo en vivo · Blockchain post-cuántica</span>
+      <h2>Una mini-blockchain protegida por IA y firmas post-cuánticas</h2>
+      <p>Envía una transacción. Primero, el modelo de IA revisa el historial de la cuenta que envía. Si la acepta, la transacción se firma con una firma de Lamport, basada solo en SHA-256 y resistente a computadoras cuánticas, y se mina en un bloque nuevo. Después intenta alterar un bloque y mira cómo la cadena detecta el cambio.</p>
+    </div>
+    <div class="bc-top">
+      <div class="card">
+        <h3>Nueva transacción</h3>
+        <form id="txForm" style="display:flex;flex-direction:column;gap:14px" novalidate>
+          <div class="field"><label for="txFrom">Cuenta que envía (perfil real del dataset)</label><select id="txFrom"></select><div class="hint" id="fromHint"></div></div>
+          <div class="field"><label for="txTo">Cuenta destino</label><input id="txTo" class="mono" value="0x4b2e…9c1d"></div>
+          <div class="field"><label for="txAmt">Monto (ETH)</label><input id="txAmt" type="number" min="0" step="0.01" value="1.5"></div>
+          <button class="btn btn-red" type="submit" id="txBtn">Revisar, firmar y minar</button>
+        </form>
+        <div class="pq-stats">
+          <div><b>16 KB</b><span>llave privada</span></div>
+          <div><b>16 KB</b><span>llave pública</span></div>
+          <div><b>8 KB</b><span>firma</span></div>
+        </div>
+        <p class="model-note">Una firma ECDSA de Bitcoin ocupa unos 72 bytes. Las firmas post-cuánticas son mucho más grandes: es el precio de resistir a una computadora cuántica. La de Lamport es de un solo uso y pertenece a la familia de firmas basadas en hash que el NIST estandarizó en 2024 (SLH-DSA, FIPS 205).</p>
+      </div>
+      <div>
+        <div class="log" id="log" role="log" aria-live="polite"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-dark btn-sm" type="button" id="validateBtn">Validar toda la cadena</button>
+          <button class="btn btn-light btn-sm" type="button" id="resetBtn">Reiniciar cadena</button>
+        </div>
+      </div>
+    </div>
+    <div class="chain" id="chain" aria-label="Cadena de bloques"></div>
+  </div>
+</section>
+
+<!-- METODOLOGIA -->
+<section class="sec alt" id="metodologia">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Tecnología</span>
+      <h2>Ingeniería de software con estándares</h2>
+      <p>Desarrollamos el sistema siguiendo las buenas prácticas de SWEBOK v4.0, de la investigación al despliegue.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl"><b>01</b><h4>Investigación</h4><p>Estado del arte en fraude blockchain, IA y criptografía post-cuántica.</p></div>
+      <div class="tl"><b>02</b><h4>Análisis de patrones</h4><p>Identificar los comportamientos que delatan cuentas fraudulentas.</p></div>
+      <div class="tl"><b>03</b><h4>Datos</h4><p>Recolección y preprocesamiento de datasets de Ethereum y Bitcoin.</p></div>
+      <div class="tl"><b>04</b><h4>Modelos</h4><p>Entrenamiento y evaluación de LR, Random Forest y SVM.</p></div>
+      <div class="tl"><b>05</b><h4>Seguridad PQC</h4><p>Integración de firmas resistentes a computación cuántica.</p></div>
+    </div>
+    <div class="grid3" style="margin-top:24px">
+      <div class="card">
+        <h3>Stack tecnológico</h3>
+        <div class="chips"><span class="chip blue">Python</span><span class="chip blue">pandas</span><span class="chip blue">scikit-learn</span><span class="chip blue">JavaScript</span><span class="chip blue">Web Crypto API (SHA-256)</span><span class="chip blue">Datasets Kaggle / Elliptic</span><span class="chip blue">Estándares NIST PQC</span></div>
+      </div>
+      <div class="dark-card">
+        <span class="tag">Por qué somos diferentes</span>
+        <p style="margin:0;font-size:15.5px;line-height:1.55">Existen soluciones de IA contra el fraude y soluciones de seguridad post-cuántica, pero casi nunca juntas. Este sistema integra ambas en una sola plataforma.</p>
+      </div>
+      <div class="card">
+        <h3>Por qué importa</h3>
+        <ul class="dots" style="font-size:15px">
+          <li>Blockchain no es inmune al fraude.</li>
+          <li>La IA detecta el fraude antes que una revisión manual.</li>
+          <li>La amenaza cuántica obliga a migrar la criptografía.</li>
+          <li>Más seguridad significa más confianza de los usuarios.</li>
+          <li>Nuestros modelos se reentrenan y mejoran continuamente.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card refs" style="margin-top:20px">
+      <h3>Respaldo científico</h3>
+      <p>[1] S. Nakamoto, <em>Bitcoin: A Peer-to-Peer Electronic Cash System</em>, 2008.</p>
+      <p>[2] M. Conti, S. Kumar, C. Lal y S. Ruj, “A Survey on Security and Privacy Issues of Bitcoin,” <em>IEEE Communications Surveys &amp; Tutorials</em>, 20(4), 2018.</p>
+      <p>[3] I. Goodfellow, Y. Bengio y A. Courville, <em>Deep Learning</em>, MIT Press, 2016.</p>
+      <p>[4] T. M. Fernández-Caramés y P. Fraga-Lamas, “Towards Post-Quantum Blockchain: A Review on Blockchain Cryptography Resistant to Quantum Computing Attacks,” 2024.</p>
+      <p>[5] National Institute of Standards and Technology (NIST), <em>Post-Quantum Cryptography Project</em>.</p>
+      <p>[6] Y. Elmougy y L. Liu, “Demystifying Fraudulent Transactions and Illicit Nodes in the Bitcoin Network for Financial Forensics,” 2023.</p>
+      <p>[7] IEEE Computer Society, <em>Guide to the Software Engineering Body of Knowledge (SWEBOK) v4.0</em>, 2024.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <span style="display:flex;align-items:center;gap:10px"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#818CF8"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><path d="M16 2l11 4v9c0 7-4.7 12.3-11 15C9.7 27.3 5 22 5 15V6z" fill="url(#lg2)"/><path d="M11 16l3.5 3.5L21.5 12" fill="none" stroke="#0B1020" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Sistema inteligente de detección de fraude en redes blockchain con seguridad post-cuántica</b></span>
+    <span>Equipo: Sharon Gómez S. · Andrés Piñeros L. · © 2026</span>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+const LABELS = {
+  "Time Diff between first and last (Mins)": ["Tiempo entre la primera y la última transacción", "minutos"],
+  "max value received": ["Valor máximo recibido", "ETH"],
+  "total ether received": ["Total de ether recibido", "ETH"],
+  "ERC20 min val rec": ["Valor mínimo recibido en tokens ERC20", "tokens"],
+  "Unique Received From Addresses": ["Direcciones distintas que le enviaron fondos", "direcciones"],
+  "avg val received": ["Valor promedio recibido", "ETH"],
+  "total transactions (including tnx to create contract": ["Total de transacciones", "transacciones"],
+  "Avg min between received tnx": ["Promedio de minutos entre transacciones recibidas", "minutos"]
+};
+const SHORT = {
+  "Time Diff between first and last (Mins)": "Antigüedad de la actividad",
+  "max value received": "Valor máximo recibido",
+  "total ether received": "Total de ether recibido",
+  "ERC20 min val rec": "Mín. recibido en ERC20",
+  "Unique Received From Addresses": "Remitentes únicos",
+  "avg val received": "Valor promedio recibido",
+  "total transactions (including tnx to create contract": "Total de transacciones",
+  "Avg min between received tnx": "Tiempo entre recepciones",
+  "total ether balance": "Balance de ether",
+  "Received Tnx": "Transacciones recibidas"
+};
+const fmt = (x, d = 1) => (x * 100).toLocaleString('es-CO', { minimumFractionDigits: d, maximumFractionDigits: d }) + ' %';
+const num = x => Number(x).toLocaleString('es-CO', { maximumFractionDigits: 4 });
+let D = null;
+
+function predict(x) {
+  let s = 0; const votes = [];
+  for (const t of D.trees) {
+    let n = 0;
+    while (t.l[n] !== -1) n = (x[t.f[n]] <= t.t[n]) ? t.l[n] : t.r[n];
+    s += t.v[n]; votes.push(t.v[n]);
+  }
+  return { p: s / D.trees.length, votes };
+}
+
+/* ---------- DETECTOR ---------- */
+function buildDetector() {
+  const form = document.getElementById('detForm');
+  D.features.forEach((f, i) => {
+    const [lab, unit] = LABELS[f]; const d = D.desc[f];
+    const w = document.createElement('div'); w.className = 'field';
+    w.innerHTML = `<label for="f${i}">${lab} <span style="color:var(--muted);font-weight:500">(${unit})</span></label>
+      <input id="f${i}" type="number" step="any" min="0" value="${d.med}">
+      <div class="hint">Mediana en el dataset: ${num(d.med)}</div>`;
+    form.appendChild(w);
+  });
+  const names = { fraude: 'Cuenta fraudulenta', legit: 'Cuenta legítima', fraude2: 'Fraude difícil', legit2: 'Legítima atípica' };
+  const pre = document.getElementById('presets');
+  D.examples.forEach(ex => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.className = 'btn btn-light btn-sm'; b.textContent = names[ex.k] || ex.k;
+    b.addEventListener('click', () => { setInputs(ex.x); analyze(ex.y); });
+    pre.appendChild(b);
+  });
+  const votes = document.getElementById('votes');
+  for (let i = 0; i < D.trees.length; i++) { const v = document.createElement('div'); v.className = 'vote'; votes.appendChild(v); }
+  form.addEventListener('submit', e => { e.preventDefault(); analyze(null); });
+  document.getElementById('randBtn').addEventListener('click', () => {
+    const x = D.features.map(f => { const d = D.desc[f]; const r = Math.random();
+      return +(r < .5 ? d.med * (r * 2) : d.med + (d.q95 - d.med) * Math.pow((r - .5) * 2, 3)).toFixed(3); });
+    setInputs(x); analyze(null);
+  });
+  const L = D.lite;
+  document.getElementById('liteNote').innerHTML = `Modelo ligero que corre en el navegador: 30 árboles y las 8 variables más importantes. En las 1.969 cuentas de prueba logra <b>${fmt(L.acc)}</b> de accuracy, <b>${fmt(L.prec)}</b> de precisión, <b>${fmt(L.rec)}</b> de recall y <b>${fmt(L.f1)}</b> de F1. El modelo completo, con 100 árboles y 45 variables, está en Resultados.`;
+}
+function setInputs(x) { x.forEach((v, i) => document.getElementById('f' + i).value = v); }
+function analyze(truth) {
+  const x = D.features.map((f, i) => { const v = parseFloat(document.getElementById('f' + i).value); return isNaN(v) ? 0 : v; });
+  const { p, votes } = predict(x);
+  const fraud = p >= 0.5;
+  const v = document.getElementById('verdict');
+  v.className = 'verdict ' + (fraud ? 'bad' : 'ok');
+  const icon = fraud
+    ? '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5"/><path d="M12 18h.01"/></svg>'
+    : '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>';
+  let extra = '';
+  if (truth !== null) extra = `<br><b>Etiqueta real en el dataset:</b> ${truth ? 'fraudulenta' : 'legítima'}. ${(truth === 1) === fraud ? 'El modelo acertó.' : 'El modelo se equivocó en este caso.'}`;
+  v.innerHTML = `<h3>${icon}${fraud ? 'Alerta: cuenta fraudulenta' : 'Cuenta legítima'}</h3><p>${fraud ? 'El patrón de la cuenta se parece al de las cuentas fraudulentas. La transacción se bloquearía.' : 'El patrón de la cuenta es normal. La transacción puede continuar.'}${extra}</p>`;
+  document.getElementById('prob').textContent = fmt(p);
+  document.getElementById('fill').style.width = (p * 100) + '%';
+  const vs = document.querySelectorAll('.vote'); let nf = 0;
+  votes.forEach((vv, i) => { setTimeout(() => { vs[i].className = 'vote ' + (vv >= .5 ? 'f' : 'l'); }, i * 18); if (vv >= .5) nf++; });
+  document.getElementById('voteCount').textContent = `${nf} de ${votes.length} árboles votan fraude`;
+}
+
+/* ---------- RESULTADOS ---------- */
+function buildResults() {
+  const M = D.summary.models;
+  const keys = [['acc', 'Accuracy'], ['prec', 'Precision'], ['rec', 'Recall'], ['f1', 'F1-score']];
+  const cls = { 'Regresión logística': 'c-lr', 'Random Forest': 'c-rf', 'SVM': 'c-svm' };
+  const bars = document.getElementById('bars');
+  keys.forEach(([k, lab]) => {
+    let h = `<div class="metric-block"><h4>${lab}</h4>`;
+    for (const n in M) h += `<div class="bar-row"><span>${n}</span><div class="bar"><div class="${cls[n]}" data-w="${M[n][k] * 100}"></div></div><span class="bar-val">${fmt(M[n][k])}</span></div>`;
+    bars.insertAdjacentHTML('beforeend', h + '</div>');
+  });
+  let t = '<thead><tr><th>Modelo</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead><tbody>';
+  for (const n in M) t += `<tr class="${n === 'Random Forest' ? 'best' : ''}"><td>${n}${n === 'Random Forest' ? ' ★' : ''}</td><td>${fmt(M[n].acc)}</td><td>${fmt(M[n].prec)}</td><td>${fmt(M[n].rec)}</td><td>${fmt(M[n].f1)}</td></tr>`;
+  document.getElementById('tbl').innerHTML = t + '</tbody>';
+  const [[tn, fp], [fn, tp]] = M['Random Forest'].cm;
+  document.getElementById('cm').innerHTML = `
+    <div class="h"></div><div class="h">Predice legítima</div><div class="h">Predice fraude</div>
+    <div class="h" style="text-align:right">Es legítima</div><div class="tn"><span class="v">${tn.toLocaleString('es-CO')}<small>aciertos</small></span></div><div class="fp"><span class="v">${fp}<small>falsas alarmas</small></span></div>
+    <div class="h" style="text-align:right">Es fraude</div><div class="fn"><span class="v">${fn}<small>fraudes no detectados</small></span></div><div class="tp"><span class="v">${tp}<small>fraudes detectados</small></span></div>`;
+  const imp = document.getElementById('imp'); const mx = D.summary.importance[0][1];
+  D.summary.importance.slice(0, 8).forEach(([f, v]) => {
+    imp.insertAdjacentHTML('beforeend', `<div class="imp-row"><span>${SHORT[f] || f}</span><div class="bar"><div class="c-rf" data-w="${v / mx * 100}"></div></div><span class="bar-val">${fmt(v)}</span></div>`);
+  });
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w + '%'); io.unobserve(e.target); }
+  }), { threshold: .2 });
+  io.observe(bars); io.observe(imp);
+}
+
+/* ---------- BLOCKCHAIN + LAMPORT ---------- */
+const enc = new TextEncoder();
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+const sha = async data => new Uint8Array(await crypto.subtle.digest('SHA-256', typeof data === 'string' ? enc.encode(data) : data));
+const short = h => h.slice(0, 10) + '…' + h.slice(-6);
+
+async function lamportKeygen() {
+  const sk = [], pk = [];
+  for (let i = 0; i < 256; i++) {
+    const a = crypto.getRandomValues(new Uint8Array(32)), b = crypto.getRandomValues(new Uint8Array(32));
+    sk.push([a, b]); pk.push([await sha(a), await sha(b)]);
+  }
+  return { sk, pk };
+}
+const bitsOf = h => { const out = []; for (let i = 0; i < 256; i++) out.push((h[i >> 3] >> (7 - (i & 7))) & 1); return out; };
+async function lamportSign(sk, msg) { const bits = bitsOf(await sha(msg)); return bits.map((b, i) => sk[i][b]); }
+async function lamportVerify(pk, msg, sig) {
+  const bits = bitsOf(await sha(msg));
+  for (let i = 0; i < 256; i++) { const h = await sha(sig[i]); const ref = pk[i][bits[i]]; for (let j = 0; j < 32; j++) if (h[j] !== ref[j]) return false; }
+  return true;
+}
+const pkFingerprint = async pk => hex(await sha(new Uint8Array(pk.flatMap(p => [...p[0], ...p[1]]))));
+
+let chain = [], WALLETS = [];
+const DIFF = '000';
+const txMsg = tx => `${tx.from}|${tx.to}|${tx.amount}|${tx.time}`;
+const blockData = b => `${b.index}|${b.prev}|${b.time}|${b.tx ? txMsg(b.tx) : 'GENESIS'}|${b.nonce}`;
+
+function log(txt, cls = '') { const l = document.getElementById('log'); const p = document.createElement('p'); p.className = 'l ' + cls; p.textContent = txt; l.appendChild(p); l.scrollTop = l.scrollHeight; }
+
+async function mine(b) {
+  b.nonce = 0; let h;
+  while (true) { h = hex(await sha(blockData(b))); if (h.startsWith(DIFF)) break; b.nonce++; }
+  b.hash = h; return b;
+}
+async function genesis() {
+  chain = [];
+  document.getElementById('log').innerHTML = '';
+  const g = await mine({ index: 0, prev: '0'.repeat(64), time: Date.now(), tx: null });
+  chain.push(g);
+  log('> Bloque génesis creado. Hash: ' + short(g.hash), 'info');
+  log('> Elige una cuenta y envía una transacción.', 'dim');
+  renderChain();
+}
+function buildWallets() {
+  const addrs = ['0x7a31…e21f', '0xc9d0…14ab', '0x5f88…b07e', '0x2e6b…aa93'];
+  WALLETS = D.examples.map((ex, i) => ({ addr: addrs[i], x: ex.x, truth: ex.y }));
+  const sel = document.getElementById('txFrom');
+  WALLETS.forEach((w, i) => { const o = document.createElement('option'); o.value = i;
+    o.textContent = `${w.addr} · ${w.x[6]} transacciones · ${num(w.x[2])} ETH recibidos`; sel.appendChild(o); });
+  const hint = () => { const w = WALLETS[sel.value]; document.getElementById('fromHint').textContent = `Historial: ${num(w.x[4])} remitentes únicos, valor máximo recibido de ${num(w.x[1])} ETH, ${num(w.x[0])} minutos de actividad.`; };
+  sel.addEventListener('change', hint); hint();
+}
+
+async function sendTx(e) {
+  e.preventDefault();
+  const btn = document.getElementById('txBtn'); btn.disabled = true; btn.textContent = 'Procesando…';
+  try {
+    const w = WALLETS[document.getElementById('txFrom').value];
+    const amount = Math.max(0, parseFloat(document.getElementById('txAmt').value) || 0);
+    const tx = { from: w.addr, to: document.getElementById('txTo').value.trim() || '0x0', amount, time: Date.now() };
+    log(`\n> Nueva transacción: ${tx.amount} ETH de ${tx.from} a ${tx.to}`, 'info');
+    log('[1/4] IA: analizando el historial de la cuenta que envía…');
+    const { p } = predict(w.x);
+    if (p >= .5) {
+      log(`      ✗ Probabilidad de fraude: ${fmt(p)}. Transacción BLOQUEADA y alerta generada.`, 'bad');
+      chain.push({ index: '—', rejected: true, tx, p }); renderChain(); return;
+    }
+    log(`      ✓ Probabilidad de fraude: ${fmt(p)}. Cuenta aceptada.`, 'ok');
+    log('[2/4] Generando par de llaves post-cuánticas de Lamport (512 hashes SHA-256)…');
+    const t0 = performance.now(); const { sk, pk } = await lamportKeygen();
+    const fp = await pkFingerprint(pk);
+    log(`      ✓ Llaves listas en ${(performance.now() - t0).toFixed(0)} ms. Huella de la llave pública: ${short(fp)}`, 'ok');
+    log('[3/4] Firmando la transacción y verificando la firma…');
+    const sig = await lamportSign(sk, txMsg(tx));
+    const ok = await lamportVerify(pk, txMsg(tx), sig);
+    log(`      ${ok ? '✓' : '✗'} Firma de 8.192 bytes ${ok ? 'válida' : 'INVÁLIDA'}. Inicio: ${hex(sig[0]).slice(0, 16)}…`, ok ? 'ok' : 'bad');
+    log(`[4/4] Minando el bloque (prueba de trabajo: el hash debe empezar por "${DIFF}")…`);
+    const prevValid = [...chain].reverse().find(b => !b.rejected);
+    const t1 = performance.now();
+    const b = await mine({ index: chain.filter(b => !b.rejected).length, prev: prevValid.hash, time: Date.now(), tx, sig, pk, fp, p });
+    chain.push(b);
+    log(`      ✓ Bloque #${b.index} minado en ${(performance.now() - t1).toFixed(0)} ms con nonce ${b.nonce}. Hash: ${short(b.hash)}`, 'ok');
+    renderChain();
+  } finally { btn.disabled = false; btn.textContent = 'Revisar, firmar y minar'; }
+}
+
+async function validate(silent) {
+  const valid = chain.filter(b => !b.rejected); const status = new Map(); let allOk = true;
+  if (!silent) log('\n> Validando la cadena completa…', 'info');
+  for (let i = 0; i < valid.length; i++) {
+    const b = valid[i]; const reasons = [];
+    const h = hex(await sha(blockData(b)));
+    if (h !== b.hash) reasons.push('el hash ya no coincide con el contenido');
+    if (i > 0 && b.prev !== valid[i - 1].hash) reasons.push('el enlace con el bloque anterior está roto');
+    if (i > 0 && status.get(valid[i - 1]).length) reasons.push('depende de un bloque alterado');
+    if (b.tx && !(await lamportVerify(b.pk, txMsg(b.tx), b.sig))) reasons.push('la firma post-cuántica no corresponde a la transacción');
+    status.set(b, reasons);
+    if (reasons.length) allOk = false;
+    if (!silent) log(reasons.length ? `  ✗ Bloque #${b.index}: ${reasons.join('; ')}` : `  ✓ Bloque #${b.index} íntegro`, reasons.length ? 'bad' : 'ok');
+  }
+  if (!silent) log(allOk ? '> Cadena VÁLIDA: ningún bloque fue alterado.' : '> Cadena COMPROMETIDA: se detectó una manipulación.', allOk ? 'ok' : 'bad');
+  return status;
+}
+
+async function tamper(b) {
+  const old = b.tx.amount; b.tx.amount = +(old * 100).toFixed(2);
+  log(`\n> Ataque simulado: alguien cambió el monto del bloque #${b.index} de ${old} a ${b.tx.amount} ETH sin volver a firmar.`, 'bad');
+  await validate(false); renderChain(true);
+}
+
+async function renderChain(withStatus) {
+  const st = await validate(true);
+  const el = document.getElementById('chain'); el.innerHTML = '';
+  chain.forEach((b, i) => {
+    if (i > 0) el.insertAdjacentHTML('beforeend', `<div class="link" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${b.rejected ? '#C9A227' : '#1A1A1D'}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>`);
+    const d = document.createElement('div');
+    if (b.rejected) {
+      d.className = 'block flag';
+      d.innerHTML = `<h4>Rechazada <span class="badge y">alerta IA</span></h4>
+        <div class="kv"><span>De</span><span>${b.tx.from}</span><span>Para</span><span>${b.tx.to}</span><span>Monto</span><span>${b.tx.amount} ETH</span><span>Fraude</span><span>${fmt(b.p)}</span></div>
+        <p style="margin:0;font-size:12px;color:#5C4806">El modelo bloqueó esta transacción antes de firmarla. No entra a la cadena.</p>`;
+    } else {
+      const bad = (st.get(b) || []).length > 0;
+      d.className = 'block ' + (bad ? 'broken' : 'valid');
+      d.innerHTML = `<h4>${b.index === 0 ? 'Génesis' : 'Bloque #' + b.index} <span class="badge ${bad ? 'r' : 'g'}">${bad ? 'alterado' : 'válido'}</span></h4>
+        <div class="kv">
+          ${b.tx ? `<span>De</span><span>${b.tx.from}</span><span>Para</span><span>${b.tx.to}</span><span>Monto</span><span>${b.tx.amount} ETH</span><span>IA</span><span>${fmt(b.p)} fraude</span><span>Firma</span><span>Lamport · ${short(b.fp)}</span>` : '<span>Datos</span><span>Bloque inicial</span>'}
+          <span>Nonce</span><span>${b.nonce}</span>
+          <span>Anterior</span><span>${short(b.prev)}</span>
+          <span>Hash</span><span>${short(b.hash)}</span>
+        </div>
+        ${b.tx ? `<div class="acts"><button class="btn btn-light btn-sm" type="button">Alterar monto</button></div>` : ''}`;
+      if (b.tx) d.querySelector('button').addEventListener('click', () => tamper(b));
+    }
+    el.appendChild(d);
+  });
+  el.scrollLeft = el.scrollWidth;
+}
+
+/* ---------- INIT ---------- */
+Promise.resolve(window.FS_DATA).then(async data => {
+  if (!data) throw new Error('Falta data.js');
+  D = data;
+  buildDetector(); buildResults(); buildWallets();
+  document.getElementById('txForm').addEventListener('submit', sendTx);
+  document.getElementById('validateBtn').addEventListener('click', async () => { await validate(false); renderChain(); });
+  document.getElementById('resetBtn').addEventListener('click', genesis);
+  if (!window.crypto || !crypto.subtle) { log('Este navegador no permite usar Web Crypto; la demo de blockchain no está disponible.', 'bad'); return; }
+  await genesis();
+}).catch(() => {
+  document.getElementById('liteNote').textContent = 'No se pudo cargar el modelo. Recarga la página.';
+});
+</script>
+</body>
+</html>
